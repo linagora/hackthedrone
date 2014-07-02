@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HackTheDrone :: Streaming</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Christophe Hamerling">
+    <link rel="stylesheet" href="/assets/bootstrap/dist/css/bootstrap.min.css">
+    <script src="/dronestream/nodecopter-client.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/assets/jquery/jquery.min.js"></script>
+    <style>
+        .content {
+            padding-top: 120px;
+        }
+    </style>
+    <script>
+        function takeoff() {
+            console.log('TAKEOFF!');
+            $.get( '/drone/takeoff', function(data) {
+                console.log(data);
+            });
+        }
+        function land() {
+            console.log('LAND!');
+            $.get( '/drone/land', function(data) {
+                console.log(data);
+            });
+        }
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">HackTheDrone :: Streaming</a>
+        </div>
+    </div>
+</nav>
+<div class="content text-center">
+    <div id="stream" class="camera"></div>
+    <button class="btn btn-success" onclick="takeoff()">TakeOff!</button>
+    &nbsp;
+    <button class="btn btn-success" onclick="land()">Land</button>
+</div>
+<script>
+    var stream = new NodecopterStream(document.getElementById('stream'));
+</script>
+</body>
+</html>

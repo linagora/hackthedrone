@@ -1,0 +1,12 @@
+{
+  "name": "hackthedrone",
+  "description": "HackTheDrone :: Navigation Data",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "~4.2.0",
+    "ar-drone": "latest",
+    "dronestream": "latest",
+    "socket.io": "~0.9.17"
+  },
+  "repository": "https://github.com/linagora/hackthedrone.git"
+}
