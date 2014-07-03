@@ -6,7 +6,8 @@
     "express": "~4.2.0",
     "ar-drone": "latest",
     "dronestream": "latest",
-    "socket.io": "~0.9.17"
+    "socket.io": "~0.9.17",
+    "twit": "^1.1.15"
   },
   "repository": "https://github.com/linagora/hackthedrone.git"
 }
