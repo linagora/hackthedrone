@@ -22,6 +22,7 @@ process.on('SIGINT', function() {
 });
 
 client.config('general:navdata_demo', 'TRUE');
+client.config('video:video_channel', 0);
 
 client.on('lowBattery', function() {
   console.log('Low battery, may not be able to take off');

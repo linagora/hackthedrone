@@ -23,6 +23,8 @@ process.on('SIGINT', function() {
 client.config({ key: 'general:navdata_demo', value: 'FALSE', timeout: 1000 }, function(err) {
   if (err) console.log(err);
 });
+client.config('video:video_channel', 0);
+
 client.on('lowBattery', function() {
   console.log('Low battery, may not be able to take off');
 });
