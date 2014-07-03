@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HackTheDrone :: Streaming</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Christophe Hamerling">
+    <link rel="stylesheet" href="/assets/bootstrap/dist/css/bootstrap.min.css">
+    <script src="/dronestream/nodecopter-client.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/assets/jquery/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .content {
+            padding-top: 120px;
+        }
+    </style>
+    <script>
+        function land() {
+            console.log('LAND!');
+            $.get('/drone/land', function(data) {
+                console.log(data);
+            });
+        }
+
+        function validTakeOffTweet(tweet) {
+            return (tweet && tweet.text && tweet.text.indexOf('takeoff') !== -1 || tweet.text.indexOf('take off') !== -1 || tweet.text.indexOf('fly') !== -1);
+        }
+
+        var socket = io.connect();
+        socket.on('tweet', function(data) {
+            var tweet = '<div class="media"><a class="pull-left" href="#"><img class="media-object" width="64" height="64" src="' + data.user.profile_image_url_https + '"></a><div class="media-body"><h5 class="media-heading"><a href="http://twitter.com/' + data.user.screen_name + '" target="_blank">@' + data.user.screen_name + '</a></h5>' + data.text + '</div></div>';
+            $('#out').empty().html(tweet);
+            if (validTakeOffTweet(data)) {
+                var thanks = '<div class="alert alert-success" role="alert">Drone started thanks to <a target="_blank" href="http://twitter.com/' + data.user.screen_name + '">@' + data.user.screen_name + '</a> tweet!</div>';
+                $('#thanks').empty().html(thanks);
+            }
+        });
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">HackTheDrone :: Twitter</a>
+        </div>
+    </div>
+</nav>
+<div class="container content">
+    <div class="row">
+
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <div id="thanks"></div>
+                    <div id="stream" class="camera"></div>
+                    <button class="btn btn-success" disabled="disabled">TakeOff!</button>
+                    &nbsp;
+                    <button class="btn btn-success" onclick="land()">Land</button>
+                    <br>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div id="out"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+<script>
+    var stream = new NodecopterStream(document.getElementById('stream'));
+</script>
+</body>
+</html>
