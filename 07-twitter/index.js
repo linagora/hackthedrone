@@ -60,7 +60,7 @@ stream.on('tweet', function(tweet) {
     }
   } else {
     console.log('Wrong tweet');
-    reply(tweet, 'Can not takeoff with your tweet, try again!');
+    reply(tweet, 'I am already flying!');
   }
 });
 

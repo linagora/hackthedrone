@@ -22,15 +22,23 @@
             });
         }
 
+        var flying = false;
+
         function validTakeOffTweet(tweet) {
+            if (flying) {
+                return false;
+            }
             return (tweet && tweet.text && tweet.text.indexOf('takeoff') !== -1 || tweet.text.indexOf('take off') !== -1 || tweet.text.indexOf('fly') !== -1);
         }
 
         var socket = io.connect();
+        var tweets = 0;
         socket.on('tweet', function(data) {
+            tweets ++;
             var tweet = '<div class="media"><a class="pull-left" href="#"><img class="media-object" width="64" height="64" src="' + data.user.profile_image_url_https + '"></a><div class="media-body"><h5 class="media-heading"><a href="http://twitter.com/' + data.user.screen_name + '" target="_blank">@' + data.user.screen_name + '</a></h5>' + data.text + '</div></div>';
             $('#out').empty().html(tweet);
             if (validTakeOffTweet(data)) {
+                flying = true;
                 var thanks = '<div class="alert alert-success" role="alert">Drone started thanks to <a target="_blank" href="http://twitter.com/' + data.user.screen_name + '">@' + data.user.screen_name + '</a> tweet!</div>';
                 $('#thanks').empty().html(thanks);
             }
