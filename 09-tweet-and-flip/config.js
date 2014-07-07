@@ -7,5 +7,5 @@ module.exports = {
   consumer_secret: '',
   access_token: '',
   access_token_secret: '',
-  tweet: 'Say Hi! from the drone at @rmll14 cc @linagora'
+  tweet: 'Say hi from the drone cc @linagora @awesomepaas'
 };

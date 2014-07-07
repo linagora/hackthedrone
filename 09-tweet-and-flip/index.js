@@ -38,17 +38,20 @@ function tweetPicture(tweet, callback) {
 function bye() {
   clearInterval(interval);
 
+  this.stop();
+  this.land();
   client.after(3000, function() {
     console.log('Going up');
-    this.up(1);
+    this.up(0.2);
   }).after(3000, function() {
     console.log('Blink');
     console.log('Be ready to flip in 3 seconds...');
     this.animateLeds('snakeGreenRed', 5, 5);
   }).after(3000, function() {
+    this.stop();
     console.log('flip!');
-    this.animate('flipAhead');
-  }).after(3000, function() {
+    this.animate('flipAhead', 1500);
+  }).after(2000, function() {
     this.stop();
     this.land();
   });
@@ -89,7 +92,7 @@ interval = setInterval(function() {
       return bye();
     } else {
       console.log('Something is bad...');
-      console.log('err :', err);
+      console.log('err :', error);
       console.log('response: ', response);
     }
   });
