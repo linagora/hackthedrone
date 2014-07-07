@@ -1,7 +1,7 @@
 # Hack The Drone
 
-Source code originally created for the [@chamerling](http://chamerling.github.io) talk at [RMLL 2014](https://2014.rmll.info/conference278).
-Slides are available at http://chamerling.github.io/slides/content/rmll14/.
+Source code for the [@chamerling](http://chamerling.github.io) talk at [RMLL 2014](https://2014.rmll.info/conference278).
+Slides are available at http://chamerling.github.io/slides/content/rmll14-fr/.
 
 ## Requirements
 
@@ -19,6 +19,7 @@ Each module described in the talk is available in a dedicated directory:
 - 06-graph: Draw the altitude using d3.js and epoch.js. Altitude is coming from the drone through the server to the browser using web socket
 - 07-twitter: Use the twitter streaming API to detect special tweets and takeoff or land (thanks to @romainhuet for the inspiration)
 - 08-beer: Better than Amazon, deliver a beer using the drone
+- 09-tweet-and-flip: Post a tweet with the drone picture and make a flip if successful.
 
 Source use npm modules and bower packages, all is centralized in the root folder, so you just have to install all dependencies once
 
@@ -28,7 +29,6 @@ Source use npm modules and bower packages, all is centralized in the root folder
 If not specified, you can launch the drone stuff by going in the folder and launch node
 
     node index.js
-
 
 ## License
 
