@@ -1,19 +1,45 @@
-var request = require('request');
-var config = require('./config');
-var open = require('open');
+var autonomy = require('ardrone-autonomy')
+  , drone = require('ar-drone')
+  , arDroneConstants = require('ar-drone/lib/constants')
+  , mission  = autonomy.createMission()
+  , config = require('./config');
 
-var drone = require('ar-drone');
-var client = drone.createClient();
+function navdata_option_mask(c) {
+  return 1 << c;
+}
+
+var navdata_options = (
+  navdata_option_mask(arDroneConstants.options.DEMO)
+  | navdata_option_mask(arDroneConstants.options.VISION_DETECT)
+  | navdata_option_mask(arDroneConstants.options.MAGNETO)
+  | navdata_option_mask(arDroneConstants.options.WIFI)
+  );
+
+var exiting = false;
+process.on('SIGINT', function() {
+  if (exiting) {
+    process.exit(0);
+  } else {
+    console.log('Got SIGINT. Landing, press Control-C again to force exit.');
+    exiting = true;
+    mission.control().disable();
+    mission.client().land(function() {
+      process.exit(0);
+    });
+  }
+});
+
+mission.client().config('general:navdata_demo', true);
+mission.client().config('general:navdata_options', navdata_options);
+mission.client().config('video:video_channel', 1);
+mission.client().config('detect:detect_type', 12);
+
 var currentImg;
 var tweeted = false;
-var interval;
-
-process.on('SIGINT', function() {
-  if (client) {
-    client.stop();
-    client.land();
-  }
-  process.exit();
+var stream = drone.createPngStream();
+stream.on('data', function(frame) {
+  console.log('Saving image');
+  currentImg = frame;
 });
 
 function tweetPicture(tweet, callback) {
@@ -35,41 +61,7 @@ function tweetPicture(tweet, callback) {
   return form;
 };
 
-function bye() {
-  clearInterval(interval);
-
-  this.stop();
-  this.land();
-  client.after(3000, function() {
-    console.log('Going up');
-    this.up(0.2);
-  }).after(3000, function() {
-    console.log('Blink');
-    console.log('Be ready to flip in 3 seconds...');
-    this.animateLeds('snakeGreenRed', 5, 5);
-  }).after(3000, function() {
-    this.stop();
-    console.log('flip!');
-    this.animate('flipAhead', 1500);
-  }).after(2000, function() {
-    this.stop();
-    this.land();
-  });
-}
-
-var stream = drone.createPngStream();
-stream.on('data', function(frame) {
-  currentImg = frame;
-});
-
-stream.on('error', function(err) {
-  console.log('Got an error on stream', err);
-});
-
-console.log('--> Take off!');
-client.takeoff();
-
-interval = setInterval(function() {
+function tweet() {
   console.log('--> Trying to tweet, say cheeeeeeeeeeese!!!');
   if (!currentImg) {
     console.log('Can not tweet empty image');
@@ -78,7 +70,7 @@ interval = setInterval(function() {
 
   if (tweeted) {
     console.log('Already tweeted');
-    return bye();
+    return;
   }
 
   var tweet = config.tweet || 'Say hi to from the drone!';
@@ -89,11 +81,40 @@ interval = setInterval(function() {
       var url = 'https://twitter.com/' + data.user.screen_name + '/status/' + data.id_str;
       console.log('Tweet posted!', url);
       open(url);
-      return bye();
     } else {
       console.log('Something is bad...');
       console.log('err :', error);
       console.log('response: ', response);
     }
   });
-}, 5000);
+};
+
+var client = mission.client();
+
+mission.takeoff()
+  .zero()
+  .altitude(1)
+  .hover(2000)
+  .taskSync(function() {
+    console.log('Going to tweet');
+    tweet();
+  })
+  .altitude(2)
+  .hover(2000)
+  .taskSync(function() {
+    console.log('Going to flip...');
+    client.animate('flipAhead', 1500);
+  })
+  .hover(2000)
+  .land();
+
+mission.run(function (err, result) {
+  if (err) {
+    console.trace("Oops, something bad happened: %s", err.message);
+    mission.client().stop();
+    mission.client().land();
+  } else {
+    console.log("We are done!");
+    process.exit(0);
+  }
+});
